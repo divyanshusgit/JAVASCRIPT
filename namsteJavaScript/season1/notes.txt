@@ -1,0 +1,462 @@
+---------------------------------------------------------------------------------------------------------
+
+HOW JAVASCRIPT WORKS
+
+Everything in javascript happens inside an execution context
+
+execution context has two components:
+- memory (variables and function are stored as key value pairs in it) (also called variable environment)
+- code (here code is executed one line at a time) (also called thread of execution)
+
+javascript is synchronous single threaded language
+
+---------------------------------------------------------------------------------------------------------
+
+HOW JAVASCRIPT IS EXECUTED
+
+var n = 2;
+function square (num)
+{
+    var ans = num*num;
+    return ans;
+}
+var square2 = square(n);
+var square4 = square(4);
+
+when the code execution starts, a global execution context is created,
+
+execution context is crated in two phases: creation phase (memory creation phase) then the code execution phase (or the execution phase)
+
+memory creation phase
+- memory is allocated to all the variables and function
+- when memory is allocated to a variable, it's initially assigned undefined
+- when memory is allocated to a function,  the whole function definition is assigned 
+
+when var n = 2; is encountered, 2 is assigned to n
+function square {...} is ignored because nothing to be executed here
+now we reach var square2 = square(n), this is a function call,
+when a function is called, a new execution context is created
+
+now in the execution context of square(n)
+memory is assigned to num and ans (memory creation)
+num is the parameter
+in the code execution phase first 2 is assigned to num
+
+return statements says that now returns the control of the program to the space where the function was called, ( the execution context of the square(n) will be deleted)
+
+after the whole code is executed, the global execution context is deleted
+
+call-stack is a stack which stores the execution context which is being executed, and when the execution context is finished it is removed from the call-stack, 
+
+it basically manages the execution contexts
+
+call-stack maintains the order of execution of execution contexts
+
+other names of call-stacks:
+- execution context stack
+- program stack
+- control stack
+- runtime stack
+- machine stack
+
+---------------------------------------------------------------------------------------------------------
+
+HOISTING IN JAVASCRIPT
+
+console.log(getName);
+getName();
+console.log(x);
+var x = 2;
+function getName(){
+    console.log('divyanshu');
+}
+
+this code won't throw error (due to hoisting)
+
+the function executed as programmed
+
+but the variable printed undefined
+
+in the memory phase:
+- javascript skims through the code, allocates undefined to every variable and corresponding function definition to every function name
+
+console.log(getName);
+getName();
+console.log(x);
+var x = 2;
+var getName = () => {
+    console.log('divyanshu');
+}
+
+this would give error
+because we used arrow function
+arrow functions behave like other variables, and due to this it will be assigned undefined until control reaches that point
+
+console.log(getName);
+getName();
+console.log(x);
+var x = 2;
+var getName = function(){
+    console.log('divyanshu');
+}
+
+this will also throw error
+because the getName will behave like variables and it will be assigned undefined until control reaches the line where the getName is assigned the function
+
+---------------------------------------------------------------------------------------------------------
+
+HOW FUNCTIONS WORK IN JS
+
+---------------------------------------------------------------------------------------------------------
+
+SHORTEST JAVASCRIPT PROGRAM WINDOW AND THIS KEYWORD
+
+window object is a global object which is created along with the global execution context, (this is also created)
+
+javascript is not only run on browsers, it's run also on other environments, and everywhere javascript runs, there's a global object, in case of browsers this global object is the window object
+
+in the global level, this refers to the window object
+
+---------------------------------------------------------------------------------------------------------
+
+UNDEFINED V/S NOT DEFINED
+
+undefined is like a placeholder value that is assigned to variables before we reach the line of code where that variable gets initialized
+
+undefined means that variable is allocated memory but not assigned a value
+
+not defined means variable is not allocated memory at all
+
+javascript is loosely typed language, weakly typed language
+
+---------------------------------------------------------------------------------------------------------
+
+THE SCOPE CHAIN, SCOPE AND LEXICAL ENVIRONMENT
+
+scope is javascript is directly related to lexical environment
+
+function a(){
+    console.log(b);
+};
+var b = 19;
+a();
+
+when we call a, javascript will search for b in the local scope of the function a, if it doesn't find it there, it will find b in outer scope
+
+function a(){
+    c();
+    function c(){
+        console.log(b);
+    };
+};
+var b = 19;
+a();
+
+this will also print 19
+
+scope of a variable is the space in the code, where that variable is accessible
+
+whenever an execution context is created a lexical environment is also created, a lexical environment is local memory along-with lexical environment of parent
+
+c function is lexically inside function a
+
+the chain of lexical environments is called the scope chain
+
+---------------------------------------------------------------------------------------------------------
+
+LET AND CONST
+
+let a = 2;
+console.log(a);
+var b = 3;
+
+initially, b will be assigned undefined and will be stored in the global memory space
+
+a, will also be assigned undefined but it won't be stored in the global object, they will be stored in a separate memory space
+
+a variable declared with let is hoisted and then it goes in temporal dead zone, until the variable gets assigned some value
+
+and when a variable is in temporal dead zone, we cannot access them, we will get an error if we try to access them, the error will show that we cannot access variable before initialization
+
+variables declared with var are attached to the global object, but variables declared with let or const aren't attached to the global object 
+
+variables declared with with let keyword cannot be re-declared (in the same scope)
+
+a variable declared with the const keyword should be initialized at the time of declaration
+
+a variable declared with the const key cannot be re-assigned any value
+
+best way to prevent the problems that may occur due to this temporal dead zone is to keep you declarations at the top
+
+---------------------------------------------------------------------------------------------------------
+
+BLOCK
+
+{
+
+}
+this is a perfectly valid javascript program
+
+block is also known as compound statement
+
+block is used to combine multiple statements into one group
+
+why do we need to group statements?
+we group statements so that we can use multiple statements in a place where javascript expects only a single statement
+
+let a = 2;
+if (a == 2) console.log('it is 2');
+proof that {} is not necessary
+we can only execute multiple statements when the condition is met, if we use the {} block
+
+BLOCK SCOPE
+
+{
+    var a = 1;
+    let b = 2;
+    const c = 3;
+}
+console.log(a);
+
+b and c will be hoisted but in a separate memory space 
+a will be attached to the global object
+since a is attached to the global object, it can be accessed from everywhere
+
+SHADOWING
+
+example1
+var a = 4;
+console.log(a);
+{
+    var a = 1;
+    let b = 2;
+    const c = 3;
+    console.log(a);
+}
+console.log(a);
+the var a = 1; shadows the var a = 4;
+this happened because both the var a = 1 and var a = 4 are pointing to the same memory location
+
+example2
+let b = 4;
+console.log(b);
+{
+    var a = 1;
+    let b = 2;
+    const c = 3;
+    console.log(b);
+}
+console.log(b);
+the let b = 4; will be in a separate scope called script
+the var a = 1 will be in the global scope
+the let b = 2 and const c = 3; will be in the block scope
+
+similar explanation for const
+
+summary:
+- var inside a block will be attached to the global object, so it will shadow the global value of variable inside as well as outside the block
+- let and const inside a block will not be attached to the global object, they will be attached to the block scope, so they will shadow the outside let and const inside the block only, they cannot shadow them outside
+
+FUNCTION SCOPE
+- variables declared inside a function become local to the function
+- they cannot be accessed outside the function
+- they get attached to the local scope of the functioon
+
+ILLEGAL SHADOWING
+
+let a = 20;
+{
+    var a = 20;
+};
+this is illegal shadowing
+
+let a = 20;
+{
+    let a = 30;
+};
+this is legal shadowing
+
+var a = 20;
+{
+    let a = 30;
+};
+this is legal shadowing
+
+let a = 20;
+function func()
+{
+    var a = 30;
+};
+this is legal shadowing
+
+let a = 30;
+function func()
+{
+    var a = 40;
+    console.log(a);
+};
+console.log(a);
+func();
+console.log(a);
+this is also legal shadowing
+
+const a = 10;
+{
+    const a = 20;
+    {
+        const a = 30;
+        console.log(a);
+    }
+}
+this is lexical scoping
+
+---------------------------------------------------------------------------------------------------------
+
+CLOSURES
+- a function with it's lexical environment is called a closure
+
+- example 1
+function x()
+{
+   var a = 7;
+   function y()
+   {
+    console.log(a);
+   };
+   y();
+};
+x();
+the function y can access the variable a, because a is present in the closure of y (a is present in the lexical environment of y)
+
+- example 2
+function x()
+{
+   var a = 7;
+   function y()
+   {
+    console.log(a);
+   };
+   return y;
+};
+let val = x();
+console.log(val);
+val();
+when the function val is called, x's execution context has been deleted, but still the function y has access to it.  
+because when a function is returned, they still maintain their lexical scope, they remember where they were present
+when we returned y, we didn't return y only, we return y with it's lexical environment, that is closure
+
+example 3
+function x()
+{
+    var a = 7;
+    function y()
+    {
+    console.log(a);
+    };
+    a = 10;
+    return y;
+};
+x();
+let val = x();
+val();
+// this will print 10
+
+example 4
+function w() {
+    var b = 8;
+    function x() {
+        var a = 7;
+        function y() {
+            console.log(a,b);
+        };
+        a = 10;
+        y();
+    };
+    b = 11;
+    x();
+};
+w();
+here y has formed a closure with x and a closure with w
+and that is reason why the function y is able to access the variables x and y
+
+some common uses of closures
+- module design pattern
+- currying
+- functions like once
+- memoize
+- maintaining state in async world
+- setTimeOuts
+- iterators
+
+---------------------------------------------------------------------------------------------------------
+
+SETTIMEOUT + CLOSURES INTERVIEW FUNCTIONS
+
+example 1
+var i = 1;
+setTimeout(function(){
+    console.log(i);
+},1000)
+
+example 2
+function x()
+{
+    for(var i = 1; i<=5; i++)
+    {
+        setTimeout(() => {
+            console.log(i);
+        }, 1000);
+    };
+};
+x();
+this will print 1, six times because we have used var,
+since we have used var, then every time the for loop block runs a new var won't be created, only the value would be updated and then when the setTimeOut is called it refers to the same memory location i, and when those setTimeOut get's executed, the value stored at that memory location has been updated to 5
+if we use let then a new let variable will be created from every block of the for loop, so every setTimeOut will have the a new let variable in their lexical scope, and the value in these let variables would also be different, so different value will get printed
+
+if we don't want to use let then we need to do something through which the setTimeOut get a closure and this closure contains the value of i
+function x()
+{
+    for(var i = 1; i<=5; i++)
+    {
+        function y(){
+            var j = i;
+            setTimeout(() => {
+                console.log(j);
+            }, i * 1000);
+        }
+        y();
+    };
+};
+x();
+
+another way 
+function x()
+{
+    for(var i = 1; i<=5; i++)
+    {
+        function y(j){
+            setTimeout(() => {
+                console.log(j);
+            }, j * 1000);
+        }
+        y(i);
+    };
+};
+x();
+
+
+---------------------------------------------------------------------------------------------------------
+FIRST CLASS FUNCTIONS
+
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
