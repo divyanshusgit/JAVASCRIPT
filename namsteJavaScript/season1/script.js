@@ -665,12 +665,323 @@
 // when the timer gets over the callback function waiting is pushed to the callback queue section
 // event loop checks for the emptiness of the callStack
 // if callStack is found empty, the callback function is pushed from the callback queue to the callStack
-// 
+
+// console.log('start');
+// document.getElementById('btn').addEventListener('click',function(){
+//     console.log('clicked');
+// })
+// console.log('end');
+// start will be printed
+// the document is another superpower given to the javascript engine by the browser, through the window object, in form of a web apis called DOM APIs
+// the addEventListener registers a callback on the click event
+// a callback will be registered in the web apis section and it will be attached to the click event
+// after attaching the event handler javascript moves on, it doesn't wait
+// end will be printed
+// when the click event occurs the callback function is loaded into the callback queue
+// not event loop checks for the emptiness of callStack
+// if it's empty then the function will be pushed to the callStack
+
+// the callback that the addEventListener method registered will remain in the web apis section until the click event occurs
+
+// why do we have the callback queue
+// so that if multiple callbacks are waiting to get executed (are waiting to get into callStack), they will be handled smoothly by the event loop
+
+// FETCH WORKS LITTLE DIFFERENTLY
+// console.log('start');
+// setTimeout(function cbT(){
+//     console.log('CB SetTimeOut');
+// });
+// fetch("https://google.com")
+// .then(function cbF(){
+//     console.log('CB Netflix');
+// });
+// console.log('end');
+// start is printed
+// cbT is registered
+// fetch registers the cbF
+// when the fetching is over, cbF is sent to the micro task queue and not the callback queue (which is also called macro task queue)
+// micro task queue has higher priority than the macro task queue
+// end is printed
+
+// what can come inside the microtask queue
+// the callback functions of promises
+// the mutation observer
+
+// callback queue is also called task queue
+
+// starvation 
+// when a callback function waits on the callStack queue, for a considerable amount of time, due to the callbacks in the micros task queue, it's called starvation 
 
 // at 19:08 
 // https://www.youtube.com/watch?v=8zKuNo4ay8E
 
 
+// ------------------------------------------------------------------------------------------------------
+
+// JS ENGINE ARCHITECTURE
+
+// JAVASCRIPT RUNTIME ENVIRONMENT
+// it is a container which has all the things required to run javascript
+// it contains javascript engine, a set of APIs (to connect to the outer world), an event loop, callback queue, microtask queue
+// JRE is not possible without the javascript engine
+// javascript engine is the heart of the JRE
+// browsers can executed javascript just because it has a JRE
+// Node.js has it's own JRE
+// Node.js helps us to run javascript outside the browser
+// if we want to run javascript on a device then all we need is a JRE
+// APIs could be different in different devices surroundings
+// setTimeOut is present in the APIs of the browser as well as in the APIs of the Node.js
+// the setTimeOut of the Browser API may have some different implementation than the setTimeOut of the Node.js API
+// there is some ECMAScript standards that needs to be followed by these javascript engines
+// first javascript engine: is now spiderMonkey
+// JS Engine is not a machine
+// JS Engine is a program
+// google v8 is written in c++
+// js engine takes code as the input
+// the code goes through three phases: PARSING, COMPILATION, EXECUTION
+// first the source code is broken down into tokes
+// then the syntax parser converts theses tokens into a Abstract Syntax Tree
+// when javascript was created, it was an interpreted language because the javascript engine that javascript used back in those days used an interpreter
+// most of the modern browsers use an interpreter + a compiler both together
+// so whether javascript is interpreted or not depends on the javascript engine
+// JIT compilation: it uses both (interpreter and compiler to execute the code) 
+// AST goes to interpreter, it gives bytecode for execution
+// and in doing so, the interpreter takes the help of the compiler for optimization process
+// the byte code is sent to the execution phase
+// and the execution of javascript isn't possible without the memory heap and the call stack
+// memory heap is the space where all the variables and functions are assigned memory
+// we also have a garbage collector
+// it collects all the garbage and sweeps them
+// using the mark and sweep algorithm
+// this mark and sweep algorithms is widely used in garbage collectors, not only in garbage collectors of javascript
+// there are many other types of optimizations that our compiler does for our code
+// some examples of such optimizations are as follows: inlining, copy elision, inline caching
+
+// About V8 (chrome's javascript engine)
+// interpreter's name is ignition
+// compiler's fan is turbofan (it's an optimizing compiler)
+
+// Working of JavaScript's V8 Engine 
+// first source code is sent to the parser
+// the parse generates a AST
+// and now the turbofan and the ignition work together to generate optimized bytecode (bytecode generation is handled by the ignition, turbofan is handled by the turbofan)
+
+// the garbage collector of javascript is orinoco 
+// they have another garbage collector called oil pan
+
+// ------------------------------------------------------------------------------------------------------
+
+// TRUST ISSUES WITH SETTIMEOUT
+
+// console.log('start');
+// setTimeout(() => {
+//     console.log('5 seconds code');
+// }, 5000);
+// console.log('end');
+// let startDate = (new Date()).getTime();
+// let endDate = startDate;
+// while(endDate!=startDate+5000)
+// {
+//     endDate = (new Date()).getTime();
+// };
+// the setTimeOut's callback function won't get executed after 5000, it will take 10000
+// even if the setTimeOut is given a timer of 0 milliseconds, it will work in the same way
+
+// ------------------------------------------------------------------------------------------------------
+
+// HIGHER ORDER FUNCTIONS
+// a function that takes another functions as argument or a function that returns another function is called a higher order function
+
+// example of higher order function
+// function x()
+// {
+//     console.log("the callback function");
+// }
+// function y(z)
+// {
+//     console.log('the higher order function');
+//     z();
+// }
+// y(x);
+
+// example of functions to find the area of a circle, circumference of a circle, diameter of a circle
+// const radius = [1,2,3,4];
+// const calcArea = function()
+// {
+//     const output = [];
+//     for(let i = 0; i < radius.length; i++)
+//     {
+//         output.push(3.14*radius[i]*radius[i]);
+//     };
+//     return output;
+// };
+// const calcPerimeter = function()
+// {
+//     const output = [];
+//     for(let i = 0; i < radius.length; i++)
+//     {
+//         output.push(2*3.14*radius[i]);
+//     };
+//     return output;
+// };
+// const calcDiameter = function()
+// {
+//     const output = [];
+//     for(let i = 0; i < radius.length; i++)
+//     {
+//         output.push(2*radius[i]);
+//     };
+//     return output;
+// };
+// console.log(calcDiameter());
+// console.log(calcPerimeter());
+// console.log(calcArea());
+// the problem with this code is that we are doing things again and again
+// this code is not modular
+// we are violating DRY principle
+
+// example demonstrating the modular version of the code
+// const radius = [1,2,3,4];
+// const calculate = function(arr,logic){
+//     const output = radius.map(logic);
+//     return output;
+// };
+// const areaLogic = function(r){
+//     return 3.14*r*r;
+// };
+// const perimeterLogic = function(r){
+//     return 3.14*2*r;
+// };
+// const diameterLogic = function(r){
+//     return 2*r;
+// };
+// console.log(calculate(radius, diameterLogic));
+// console.log(calculate(radius, perimeterLogic));
+// console.log(calculate(radius, areaLogic));
+// this is an example of functional programming
+// in functional programming we break out code into smaller and smaller functions
+
+// attaching our calculate function to the array constructor
+// const radius = [1,2,3,4];
+// Array.prototype.calculate = function(logic){
+//     const output = radius.map(logic);
+//     return output;
+// };
+// const areaLogic = function(r){
+//     return 3.14*r*r;
+// };
+// const perimeterLogic = function(r){
+//     return 3.14*2*r;
+// };
+// const diameterLogic = function(r){
+//     return 2*r;
+// };
+// console.log(radius.calculate(diameterLogic));
+// console.log(radius.calculate(perimeterLogic));
+// console.log(radius. calculate(areaLogic));
+
+// ------------------------------------------------------------------------------------------------------
+
+
+// MAP FILTER AND REDUCE
+
+// MAP FUNCTION
+// const arr = [1,2,3,4];
+// function double(x)
+// {
+//     return 2*x;
+// };
+// function triple(x)
+// {
+//     return 3*x;
+// };
+// function binary(x)
+// {
+//     return x.toString(2);
+// };
+// console.log(arr.map(double));
+// console.log(arr.map(triple));
+// console.log(arr.map(binary));
+
+// FILTER FUNCTION
+// const arr = [1,2,3,4,5];
+// function even(x)
+// {
+//     return x%2==0;
+// };
+// console.log(arr.filter(even));
+// const newArr = arr.filter((element)=>{
+//     return element%2==0;
+// });
+
+// REDUCE FUNCTION
+// const arr = [1,2,3,4];
+// const sum = arr.reduce(function(startVal,currentVal){
+//     return startVal+=currentVal;
+// },10);
+// console.log(sum);
+
+// FINDING MAX VALUE
+// using normal function
+// const arr = [1,2,3,4];
+// function findMax(arr){
+//     let max = -Infinity;
+//     for(let i = 0; i<arr.length; i++)
+//     {
+//         if(max<arr[i])
+//         {
+//             max = arr[i];
+//         };
+//     };
+//     return max;
+// };
+// console.log(findMax(arr));
+// using reduce
+// const arr = [1,2,3,4];
+// const max = arr.reduce((startVal,currentVal)=>{
+//     if(startVal<currentVal)
+//     {
+//         startVal = currentVal;
+//     };
+//     return startVal;
+// },-Infinity);
+// console.log(max);
+
+// IF WE HAVE A COMPLEX DATA, ON WHICH WE NEED TO FIND THE MAX AGE
+// using reduce
+// const obj = [
+//     {firstName: 'chinu3', age:'23'},
+//     {firstName: 'chinu1', age:'20'},
+//     {firstName: 'chinu4', age:'24'},
+//     {firstName: 'chinu2', age:'22'},
+// ];
+// const maxAgedPerson = obj.reduce(function(startVal, curObj){
+//     let obj;
+//     if(startVal<curObj.age)
+//     {
+//         obj = curObj;
+//         startVal = curObj.age;
+//     };
+//     return startVal;
+// },-Infinity);
+// console.log(maxAgedPerson);
+
+// IF WE HAVE COMPLEX DATA OF WHICH WE HAVE TO MAKE AN ARRAY THAT CONTAINS THE FULL NAMES OF EMPLOYEES
+// const obj = [
+//     {firstName: 'chinu3', lastName: 'surName3', age:'23'},
+//     {firstName: 'chinu1', lastName: 'surName1', age:'20'},
+//     {firstName: 'chinu4', lastName: 'surName4', age:'24'},
+//     {firstName: 'chinu2', lastName: 'surName2', age:'22'},
+// ];
+// const output = obj.map(x=>x.firstName+" "+x.lastName);
+// console.log(output);
+
+// start at: 37.41
+// https://www.youtube.com/watch?v=zdp0zrpKzIE&t=233s
+
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
