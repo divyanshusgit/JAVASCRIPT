@@ -402,6 +402,13 @@
 // };
 // x();
 
+// WHEN THE SETTIMEOUT's CALLBACK FUNCTION TAKES SOME ARGUMENTS
+// function sum(a,b)
+// {
+//     console.log(a+b);
+// };
+// setTimeout(sum, 2000, 3, 4);
+
 // ------------------------------------------------------------------------------------------------------
 
 // FIRST CLASS FUNCTIONS
@@ -979,6 +986,143 @@
 // start at: 37.41
 // https://www.youtube.com/watch?v=zdp0zrpKzIE&t=233s
 
+// ------------------------------------------------------------------------------------------------------
+
+// CALLBACK HELL
+// TIME TIDE AND JAVASCRIPT WAITS FOR NONE
+
+// example 1
+// using callback is a powerful way to async operations in javascript
+// console.log('namaste');
+// console.log('london');
+// setTimeout(version, 5000);
+// function version(){
+//     console.log('3.0');
+// };
+
+// example 2
+// const cart = ['london','paris','newyork'];
+// api.createOrder();
+// api.proceedToPayment();
+// first we will need to create an order
+// and then only we can proceedToPayment
+// this dependency is managed using callback
+// we need to call the proceedToPayment function after the createOrder function
+
+// so we will wrap the proceedToPayment function inside another function
+// and then we will pass this function as a callback function to the createOrder function
+// api.createOrder(cart,function(){
+//     api.proceedToPayment();
+// });
+// now it is the responsibility of the createOrder function to create an order and then call the proceedToPayment function  
+
+// now we are going more real and we need to show the order summary page after the proceedToPayment button has been clicked
+// so we have the following functions
+// api.createOrder();
+// api.proceedToPayment();
+// api.showOrderSummary();
+// so now our code will look like this
+// api.createOrder(cart, function(){
+//     api.proceedToPayment(function(){
+//         api.showOrderSummary();
+//     });
+// });
+
+// now we want to update the wallet
+// api.createOrder(cart, function(){
+//     api.proceedToPayment(function(){
+//         api.showOrderSummary(function(){
+//             api.updateWallet();
+//         });
+//     });
+// });
+
+// notice
+// the code is growing horizontally
+// code is becoming unreadable and ugly
+// code is becoming unmaintainable
+// this structure is called pyramid of doom
+// this is called callback hell
+// this is the first problem with callbacks
+
+// ------------------------------------------------------------------------------------------------------
+
+// INVERSION OF CONTROL
+// we took the proceedToPayment function and gave it to the createOrder function
+// we are blindly trusting the createOrder function
+// this is risky 
+// what if the callback function is not called at all, what if the callback function is called twice
+// we are giving the control of the callback function to another code, and this is called inversion of control
+
+// const cart = ['kurta','pehjama','maala'];
+// createOrder(cart); // this will return an orderID
+// proceedToPayment(orderID); 
+// both these functions are async (we don't know how much time they will take)
+// but they are dependent on each other
+
+// trying to handle this situation using callbacks
+// createOrder(cart,function(orderID){
+//     proceedToPayment(orderID);
+// });
+// this is how our code will look if we had to use callbacks to do the work
+// but what's the issue with this code
+// this issue is inversion of control
+
+// handling this using promise
+// we will design our createOrder api such a way that it won't take a callback function, it will return a promise, and this promise will be an object which contains the a property named "returnVariable" and it is assigned undefined initially, and when the createOrder has done it's work this promise object will be updated (the property "returnValue" will be assigned the value that the createOrder function has created)
+// we will also attach a callback function to the promise object so that the callback function's logic get's executed after the promise object has been updated
+// const promise1 = createOrder(cart);
+// promise1.then(function(orderID){
+//     proceedToPayment(orderID);
+// });
+
+// how this code is better than the callback approach
+// because in callback function we have passed the callback function to the outer function
+// we were blindly trusting the outer function
+// but the promises approach we are attaching the callback function to the promise object
+
+// const GITHUB_API = "https://api.github.com/users/divyanshusgit";
+// const user = fetch(GITHUB_API);
+// console.log(user);
+// user.then(function(content)
+// {
+//     console.log(content);
+//     console.log(user);
+// });
+// initially the promise object contains undefined, and after the promise gets resolved, the value of the promise object will be updated 
+// the promise object contains a return value
+// and a promise state value: which is either pending or resolved or rejected
+// another plus point of using promises is that it is immutable
+
+// DEFINiTION
+// promise object is a placeholder which will be filled with a value later
+// a promise is an object representing the eventual completion or failure of an async operations.
+
+// PROMISE CHAINING
+// resolves callback hell
+
+// const GITHUB_API = "https://api.github.com/users/divyanshusgit";
+// fetch(GITHUB_API)
+// .then(function(orderID)
+// {
+//     return proceedToPayment(orderID);
+// })
+// .then(function(total){
+//     return showOrderSummary(total);
+// })
+// .then(function(transactValue){
+//     return updateWallet(transactValue);
+// });
+// const GITHUB_API = "https://api.github.com/users/divyanshusgit";
+// fetch(GITHUB_API)
+// .then(orderID=>proceedToPayment(orderID))
+// .then(total=>showOrderSummary(total))
+// .then(transactValue=>updateWallet(transactValue));
+
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
