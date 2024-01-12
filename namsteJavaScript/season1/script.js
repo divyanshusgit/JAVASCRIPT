@@ -1120,6 +1120,82 @@
 // .then(transactValue=>updateWallet(transactValue));
 
 // ------------------------------------------------------------------------------------------------------
+
+// PROMISES
+// building e-com
+// const cart = ['kurta','phejama','ghadhi'];
+// this createOrder API will take cart as input and will return an orderID
+// createOrder(cart); 
+// this proceedToPayment API will take orderID and will take us to payment page
+// proceedToPayment(orderID);
+// both the apis are async
+// the second one is dependent on the first one
+
+// trying to handle this using callbacks
+// const cart = ['kurta','phejama','ghadhi'];
+// createOrder(cart, function(){
+//     proceedToPayment(orderID);
+// });
+// now it's createOrder api's to call back the proceedToPayment api later 
+
+// the problems 
+// inversion of control (we have given power to the createOrder api)
+
+// trying to handle this using promises
+// const promise = createOrder(cart);
+// the createOrder api shouldn't take any callback function
+// the promise object is an object which contains a data = undefined in it initially
+// the promise object will contain whatever the createOrder api will return
+// it will store undefined till the moment it gets a return value
+// now we will attach a callback function to this promise object
+// promise.then(function(orderID){
+//     proceedToPayment(orderID);
+// });
+// when the promise object get's filled with data the callback function (then's parameter) will be called automatically
+
+// how this code is better
+// we are not passing the proceedToPayment to createOrder, we are attaching this to that
+// no inversion of control
+// no doubts if the callback function will be called twice or more or never at all
+// using promises the .then's parameter (the callback function) will be called only once
+
+// fetch
+// is an api provided by the browser to make an external call
+// it returns us a promise
+// const GITHUB_API = "https://api.github.com/users/divyanshusgit";
+// const user = fetch(GITHUB_API);
+// user.then(function(response){
+//     console.log(response);
+// })
+
+// contents of a promise object
+// promiseResult (initially undefined)
+// promiseState (either pending or fulfilled or rejected)
+
+// the promise object is immutable
+
+// definition of promise
+// a promise is a placeholder for a certain period of time
+/// a container for future value
+// a promise is a an object that represents the actual completion or failure of an async event
+
+// the callback hell which would be created if we used callbacks
+// const cart = ["shoes","pants","kurta"];
+// createOrder(cart, function(orderID){
+//     proceedToPayment(orderID, function(paymentInfo){
+//         showOrderSummary(paymentInfo, function(){
+//             updateWallet();
+//         });
+//     });
+// });
+
+// the promise doesn't crate callbac hell
+const cart = ["shoes","pants","kurta"];
+createOrder(cart, orderID => proceedToPayment(orderID))
+.then(paymentInfo => showOrderSummary(paymentInfo))
+.then(updateWallet);
+
+
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
