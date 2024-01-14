@@ -1190,14 +1190,196 @@
 // });
 
 // the promise doesn't crate callbac hell
-const cart = ["shoes","pants","kurta"];
-createOrder(cart, orderID => proceedToPayment(orderID))
-.then(paymentInfo => showOrderSummary(paymentInfo))
-.then(updateWallet);
+// const cart = ["shoes","pants","kurta"];
+// createOrder(cart, orderID => proceedToPayment(orderID))
+// .then(paymentInfo => showOrderSummary(paymentInfo))
+// .then(updateWallet);
 
 
 // ------------------------------------------------------------------------------------------------------
+
+// PROMISES
+// const cart = ['kurta','pehjama','watch'];
+// const promise = createOrder(cart);
+// console.log(promise);
+// promise.then(
+//     (resVal)=>{
+//         console.log(resVal)
+//         console.log(promise)
+//     },
+//     (rejVal)=>console.log(rejVal)
+// );
+// function createOrder(cart)
+// {
+//     const pr = new Promise(function(resolve,reject){
+//         // createOrder
+//         // validateCart
+//         // orderID
+//         if(!validateCart(cart)){
+//             const err = new Error("Cart is not valid");
+//             reject(err);
+//         };
+//         // logic for createOrder
+//         const orderID = "12345";
+//         if(orderID){
+//             setTimeout(() => {
+//                 resolve(orderID);
+//             }, 3000);
+//         };
+//     });
+//     return pr;
+// };
+// function validateCart(){
+//     return true;
+// }
+// the createOrder api will create a new promise and will return the promise
+// we will resolve the promise if the cart is validated
+// 
+
 // ------------------------------------------------------------------------------------------------------
+
+// ASYNC 
+// async is a keyword which is used before a function to make the function an async function
+// async function returns a promise
+
+// example 1 (making the async function return a promise)
+// async function getData(){
+//     return new Promise(function(resolve,reject){
+//         resolve(123);
+//     });
+// };
+// const prom = getData();
+
+// example 2 (making the async function return something else)
+// if we don't return a promise object, then the return value will be wrapped around a promise and then this promise will be returned
+// async function getData(){
+//     return 1;
+// };
+// const prom = getData();
+// console.log(prom);
+
+// example 3 (getting the data out of the promise)
+// async function getData(){
+//     return new Promise(function(resolve,reject){
+//         resolve(123);
+//     });
+// };
+// const prom = getData();
+// prom.then(function(val){
+//     console.log(val);
+// })
+
+// the async and await combo are used to handle promises
+
+// example 4 (handling promises without async await)
+// const prom = new Promise(function(resolve,reject){
+//     resolve("Promise resolved");
+// });
+// function getData(){
+//     prom.then(function(val){
+//         console.log(val);
+//     });
+// };
+// getData();
+
+// example 5 (using await with async)
+// const prom = new Promise(function(resolve,reject){
+//     resolve("promise resolved");
+// });
+// async function getData(){
+//     const val = await prom;
+//     console.log(val);
+// };
+// getData();
+
+// await 
+// can only be used inside an async function
+
+// example 6 (if the promise get's resolved after some time) (case without async/await syntax) 
+// const prom = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve("promise resolved");
+//     }, 2000);
+// });
+// function getData(){
+//     prom.then(function(val){
+//         console.log(val);
+//     });
+//     console.log("inside getData, after then function");
+// };
+// getData();
+
+// example 7 (if the promise get's resolved after some time) (case without async/await syntax)
+// const prom = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve("promise resolved");
+//     }, 5000);
+// });
+// async function getData(){
+//     const val = await prom;
+//     console.log("inside getData, after then function");
+// };
+// getData();
+
+// the difference
+// in case of handling promise without async await, javascript won't wait for the promise to get resolved, and will print the "inside getData, after then function" before the promise get's resolved
+
+// example 8.1 (handling multiple promise using async await) 
+// const prom = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve(1234);
+//     }, 5000);
+// });
+// async function getData(){
+//     const val1 = await prom;
+//     console.log("val1");
+//     const val2 = await prom;
+//     console.log("val2");
+// };
+// getData();
+
+// example 8.2 (handling multiple promise using async await) 
+// const prom1 = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve(1234);
+//     }, 5000);
+// });
+// const prom2 = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve(1234);
+//     }, 10000);
+// });
+// async function getData(){
+//     const val1 = await prom1;
+//     console.log("val1");
+//     const val2 = await prom2;
+//     console.log("val2");
+// };
+// getData();
+
+// example 8.3 (handling multiple promise using async await) 
+const prom1 = new Promise(function(resolve,reject){
+    setTimeout(() => {
+        resolve(1234);
+    }, 10000);
+});
+const prom2 = new Promise(function(resolve,reject){
+    setTimeout(() => {
+        resolve(1234);
+    }, 5000);
+});
+async function getData(){
+    const val1 = await prom1;
+    console.log("val1");
+    const val2 = await prom2;
+    console.log("val2");
+};
+getData();
+
+// DOUBTS
+// why printing the prom object in example 1 prints a promise in pending state
+// why printing the prom object in example 2 prints a promise in fulfilled state 
+
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
