@@ -1284,7 +1284,9 @@
 
 // example 5 (using await with async)
 // const prom = new Promise(function(resolve,reject){
-//     resolve("promise resolved");
+//     setTimeout(() => {
+//         resolve("promise resolved");
+//     }, 2000);
 // });
 // async function getData(){
 //     const val = await prom;
@@ -1358,29 +1360,246 @@
 // getData();
 
 // example 8.3 (handling multiple promise using async await) 
-const prom1 = new Promise(function(resolve,reject){
-    setTimeout(() => {
-        resolve(1234);
-    }, 10000);
-});
-const prom2 = new Promise(function(resolve,reject){
-    setTimeout(() => {
-        resolve(1234);
-    }, 5000);
-});
-async function getData(){
-    const val1 = await prom1;
-    console.log("val1");
-    const val2 = await prom2;
-    console.log("val2");
-};
-getData();
+// const prom1 = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve(1234);
+//     }, 10000);
+// });
+// const prom2 = new Promise(function(resolve,reject){
+//     setTimeout(() => {
+//         resolve(1234);
+//     }, 20000);
+// });
+// async function getData(){
+//     console.log('getData start');
+//     const val1 = await prom1;
+//     console.log("val1");
+//     const val2 = await prom2;
+//     console.log("val2");
+// };
+// getData();
+
+// at 48 
+// link: https://www.youtube.com/watch?v=6nv3qy3oNkc&list=PPSV
+
+// for prom1 5000 and prom 10000
+// when the control reaches the getData function
+// the getData function will enter the call stack
+// execution will start
+// getData started will be printed
+// control reaches the await prom1 statement
+// javascript sees that the prom1 is not yet resolved/rejected
+// so the execution of the getData function will be suspended
+// it will move out of the call stack
+// then when the prom1 gets resolved, getData will again enter the call stack
+// now getData will start execution from the point it left
+// now getData will log the val1
+// now control reaches the await prom2
+// prom2 isn't resolved/rejected yet
+// so the execution of the getData function will be suspended again
+// then when the prom2 gets resolved, the getData function will enter the callStack again
+// then the getData function's execution will start from where it left
+// the val2 will be logged
+// now getData function is completely executed
+// so it will exit the callStack and won't enter the callStack again
+
+// if prom1 10000 and prom2 5000
+// when control reaches the prom2
+// prom2 has already been resolved
+// so the execution of the getData function won't be suspended again
+
+// REAL WORLD EXAMPLE OF ASYNC AWAIT USING THE FETCH FUNCTION
+// async function handlePromise(){
+//     const API_URL = "https://api.github.com/users/divyanshusgit";
+//     const resp1 = await fetch(API_URL);
+//     console.log(resp1);
+//     const resp2 = await resp1.json();
+//     console.log(resp2);
+// };
+// console.log('before the handlePromise');
+// handlePromise();
+// console.log('after the handlePromise');
+// fetch function returns a promise
+// the resp will store the response (returned by the promise which was returned by the fetch)
+// when JavaScript reaches the line containing fetch, it sees that this piece is async, so the execution of the handlePromise function will be suspended
+// when the promise returned by the fetch function get's resolved, the execution of the handlePromise function is resumed
+// the fetch function's returned promise returns a response object which contains readable stream, we can convert this readable stream into json, using .json() function
+// this .json() is again a promise, which gives us the json value
+
+// HANDLING ERRORS USING TRY CATCH 
+// async function handlePromise(){
+//     const API_URL = "htdtps://api.github.com/users/divyanshusgit";
+//     try
+//     {
+//         const resp1 = await fetch(API_URL);
+//         const resp2 = await resp1.json();
+//         console.log(resp2);
+//     }
+//     catch(err){
+//         console.log(err);
+//     }
+// };
+// console.log('before the handlePromise');
+// handlePromise();
+// console.log('after the handlePromise');
+// if the api is not valid
+// first the network call will fail, this will throw an error (because fetch api won't be able to load because the URL is not supported)
+// second the failed to fetch typeerror will be handled
+
+// HANDLING ERRORS USING CATCH FUNCTION
+// async function handlePromise(){
+//     const API_URL = "htdtps://api.github.com/users/divyanshusgit";
+//     try
+//     {
+//         const resp1 = await fetch(API_URL);
+//         const resp2 = await resp1.json();
+//         console.log(resp2);
+//     }
+//     catch(err){
+//         console.log(err);
+//     }
+// };
+// console.log('before the handlePromise');
+// handlePromise().catch(function(err){
+//     console.log(err);
+// });
+// console.log('after the handlePromise');
+
+// INTERVIEW QUESTIONS
+// What is async await?
+// async is a keyword which is used with function to make them async
+// await is a keyword which is used to handle promises (which are async) inside async function
+// explain how the program works behind the scenes
+// if possible try to explain promises also
+
+// ASYNC AWAIT v/s PROMISE.THEN/CATCH
+// async await is just syntactic sugar for promise.then and promise.catch
+
+
 
 // DOUBTS
 // why printing the prom object in example 1 prints a promise in pending state
 // why printing the prom object in example 2 prints a promise in fulfilled state 
+// what the hell is json
 
 // ------------------------------------------------------------------------------------------------------
+
+// PROMISE APIS
+
+// PROMISE.ALL
+// it takes an array of promises as input
+// return the array of the results of the promises
+// promise.all waits for all the promises to get resolved
+
+// success case
+// const prom1 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//        resolve('prom1 resolved'); 
+//     }, 3000);
+// });
+// const prom2 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//        resolve('prom1 resolved'); 
+//     }, 1000);
+// });
+// const prom3 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//        resolve('prom1 resolved'); 
+//     }, 2000);
+// });
+// const prom = Promise.all([prom1,prom2,prom3]);
+// prom.then((val)=>console.log(val));
+
+// failure case
+// as soon as one of the promises gets rejected the promise.all throws error
+// the rejection of one promise won't affect other promises
+// const prom1 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//     //    reject('prom1 rejected'); 
+//        resolve('prom1 resolved'); 
+//        console.log('inside prom1');
+//     }, 3000);
+// });
+// const prom2 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//     //    reject('prom1 rejected'); 
+//     resolve('prom1 resolved'); 
+//     console.log('inside prom2');
+//     }, 1000);
+// });
+// const prom3 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//        reject('prom1 rejectd'); 
+//     //    resolve('prom1 resolved'); 
+//        console.log('inside prom3');
+//     }, 2000);
+// });
+// const prom = Promise.all([prom1,prom2,prom3]);
+// prom.then((val)=>console.log(val));
+
+// PROMISE.ALLSETTLED
+// the promise.allSettled will return an array of the results irrespective of their settlement nature (resolved or rejected)
+// const prom1 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         resolve('prom1ResValue');
+//     }, 1000);
+// });
+// const prom2 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         reject('prom1ResValue');
+//     }, 2000);
+// });
+// const prom3 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         resolve('prom1ResValue');
+//     }, 3000);
+// });
+// const prom = Promise.allSettled([prom1,prom2,prom3]);
+// prom.then((val)=>console.log(val));
+
+// PROMISE.RACE
+// returns the value of the promise that get's settled first
+// if the first promise that get's settled has been rejected, then it will throw an error
+// const prom1 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         resolve('prom1ResValue');
+//     }, 2000);
+// });
+// const prom2 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         reject('prom2ResValue');
+//     }, 1000);
+// });
+// const prom3 = new Promise((resolve,reject)=>{
+//     setTimeout(() => {
+//         resolve('prom3ResValue');
+//     }, 3000);
+// });
+// const prom = Promise.race([prom1,prom2,prom3]);
+// prom.then((val)=>console.log(val));
+
+// PROMISE.ANY
+// returns the first promise that gets resolved
+// will throw error only if all the promises gets rejected
+const prom1 = new Promise((resolve,reject)=>{
+    setTimeout(() => {
+        reject('prom1ResValue');
+    }, 2000);
+});
+const prom2 = new Promise((resolve,reject)=>{
+    setTimeout(() => {
+        reject('prom2ResValue');
+    }, 1000);
+});
+const prom3 = new Promise((resolve,reject)=>{
+    setTimeout(() => {
+        reject('prom3ResValue');
+    }, 3000);
+});
+const prom = Promise.any([prom1,prom2,prom3]);
+prom.then((val)=>console.log(val));
+
+
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
